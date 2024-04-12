@@ -1,0 +1,16 @@
+#!/bin/bash -x
+
+mkdir -p /etc/netns/vpn
+echo 'nameserver 1.1.1.1' > /etc/netns/vpn/resolv.conf
+ip l add vers-vpn type veth peer name vpn-eth0
+ip netns add vpn
+ip link set vpn-eth0 netns vpn
+ip netns exec vpn ip link set lo up
+ip netns exec vpn ip link set vpn-eth0 up
+ip netns exec vpn ip address add 10.0.10.1/24 dev vpn-eth0
+ip netns exec vpn ip route add default via 10.0.10.254
+ip link set dev vers-vpn up
+ip address add 10.0.10.254/24 dev vers-vpn
+sysctl -w net.ipv4.ip_forward=1
+iptables -t nat -A POSTROUTING -s 10.0.10.0/24 -j MASQUERADE
+
