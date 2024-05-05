@@ -13,4 +13,4 @@ ip link set dev vers-vpn up
 ip address add 10.0.10.254/24 dev vers-vpn
 sysctl -w net.ipv4.ip_forward=1
 iptables -t nat -A POSTROUTING -s 10.0.10.0/24 -j MASQUERADE
-
+#sudo mount -t cgroup2 cgroup2 /sys/fs/cgroup && sudo mount -t securityfs securityfs /sys/kernel/security/
